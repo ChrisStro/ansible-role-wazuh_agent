@@ -1,0 +1,11 @@
+- name: Set wazuh agent name
+  ansible.builtin.set_fact:
+    wazuh_agent_hostname: "{{ ansible_hostname }}"
+
+- name: Build download uri
+  ansible.builtin.set_fact:
+    wazuh_agent_hostname: "{{ ansible_hostname }}"
+
+- name: Running on distributions based on {{ ansible_os_family }}
+  ansible.builtin.include_tasks: "_{{ ansible_os_family | lower }}-tasks.yml"
+  tags: install-wazuh-agent

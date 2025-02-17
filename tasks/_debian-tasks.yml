@@ -1,0 +1,51 @@
+- name: Install dependencies on Debian-based systems (Ubuntu/Debian)
+  ansible.builtin.apt:
+    name:
+      - wget
+      - curl
+      - gnupg
+    state: present
+    update_cache: true
+
+- name: Set base download urldebian base url
+  ansible.builtin.set_fact:
+    wazuh_agent_base_url: "https://packages.wazuh.com/{{ wazuh_agent_version | split('.') | first }}.x/apt/pool/main/w/wazuh-agent"
+
+- name: Set download uri for amd64 based systems
+  when: ansible_architecture != "aarch64"
+  ansible.builtin.set_fact:
+    wazuh_agent_download_uri: "{{ wazuh_agent_base_url }}/wazuh-agent_{{ wazuh_agent_version }}-1_amd64.deb"
+
+- name: Set download uri for arch64 based systems
+  when: ansible_architecture == "aarch64"
+  ansible.builtin.set_fact:
+    wazuh_agent_download_uri: "{{ wazuh_agent_base_url }}/wazuh-agent_{{ wazuh_agent_version }}-1_amd64.deb"
+
+- name: Install wazuh-agent version amd64-{{ wazuh_agent_version }}
+  ansible.builtin.apt:
+    # force: true
+    deb: "{{ wazuh_agent_download_uri }}"
+  environment:
+    WAZUH_MANAGER: "{{ wazuh_agent_wazuh_manager }}"
+    WAZUH_AGENT_NAME: "{{ wazuh_agent_hostname }}"
+  notify: Enable wazuh-agent daemon
+
+# - name: Download wazuh-agent version {{ wazuh_agent_version }}
+#   ansible.builtin.get_url:
+#     url: "{{ wazuh_agent_download_uri }}"
+#     dest: "/tmp/wazuh-agent_{{ wazuh_agent_version }}-1.deb"
+#     mode: "0644"
+
+# - name: Install wazuh-agent version {{ wazuh_agent_version }}
+#   ansible.builtin.apt:
+#     deb: "/tmp/wazuh-agent_{{ wazuh_agent_version }}-1.deb"
+#   environment:
+#     WAZUH_MANAGER: "{{ wazuh_agent_wazuh_manager }}"
+#     WAZUH_AGENT_NAME: "{{ wazuh_agent_hostname }}"
+#   notify: Enable wazuh-agent daemon
+
+- name: Configure wazuh manager ip in ossec.confg
+  ansible.builtin.replace:
+    path: /var/ossec/etc/ossec.conf
+    regexp: '<address>MANAGER_IP</address>'
+    replace: '<address>{{ wazuh_agent_wazuh_manager }}</address>'
