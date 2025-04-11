@@ -9,6 +9,9 @@ For available variables see `defaults/main.yml`
 # required
 wazuh_agent_wazuh_manager: MyWazuhIpOrFqdn.dns.suffix
 
+# optional
+wazuh_agent_password: "my_own_secret"
+
 ```
 
 ## Notes

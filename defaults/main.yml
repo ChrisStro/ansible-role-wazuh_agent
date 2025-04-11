@@ -1,1 +1,2 @@
 wazuh_agent_version: "4.10.1"
+# wazuh_agent_password: "my_own_secret"

@@ -9,3 +9,11 @@
 - name: Running on distributions based on {{ ansible_os_family }}
   ansible.builtin.include_tasks: "_{{ ansible_os_family | lower }}-tasks.yml"
   tags: install-wazuh-agent
+
+- name: Create file for password authentication
+  when: wazuh_agent_password is defined
+  ansible.builtin.copy:
+    dest: /var/ossec/etc/authd.pass
+    content: "{{ wazuh_agent_password }}"
+    mode: "640"
+    owner: root:wazuh
