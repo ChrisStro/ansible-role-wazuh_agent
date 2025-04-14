@@ -1,4 +1,4 @@
-- name: Test connectivity for enrollment to {{ wazuh_agent_wazuh_manager }}
+- name: Test connectivity for enrollment to wazuh server
   ansible.builtin.wait_for:
     host: "{{ wazuh_agent_wazuh_manager }}"
     port: "{{ wazuh_agent_enrollment_port }}"
